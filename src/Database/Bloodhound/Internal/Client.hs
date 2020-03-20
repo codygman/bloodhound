@@ -24,6 +24,7 @@ import           GHC.Enum
 import           Network.HTTP.Client
 import           Text.Read                                  (Read (..))
 import qualified Text.Read                                  as TR
+import Control.Monad.Fail (MonadFail)
 
 import           Database.Bloodhound.Internal.Analysis
 import           Database.Bloodhound.Internal.Newtypes
@@ -2363,7 +2364,7 @@ instance ToJSON Interval where
   toJSON Minute  = "minute"
   toJSON Second  = "second"
 
-parseStringInterval :: (Monad m) => String -> m NominalDiffTime
+parseStringInterval :: (MonadFail m, Monad m) => String -> m NominalDiffTime
 parseStringInterval s = case span isNumber s of
   ("", _) -> fail "Invalid interval"
   (nS, unitS) -> case (readMay nS, readMay unitS) of
